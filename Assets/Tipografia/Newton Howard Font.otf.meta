@@ -1,0 +1,24 @@
+fileFormatVersion: 2
+guid: 1c5234b6e8146604ca23fa8a97f706f8
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Newton Howard Font
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 294838b2344478b47bbefc1c38375a0e, type: 3}
+  - {fileID: 12800000, guid: c8ccc9be0e88be74fa6d24024309d05c, type: 3}
+  - {fileID: 12800000, guid: 9aefd5b55e74c714581e2ffcc3c8baf2, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

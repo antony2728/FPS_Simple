@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f4d23ff4d4637b4695770390be0db55, type: 3}
+  m_Name: Fusil
+  m_EditorClassIdentifier: 
+  names: MP5
+  firate: 0.1
+  bloom: 15
+  recoil: 3
+  kickback: 0.05
+  aimSpeed: 10
+  prefab: {fileID: 7091249482717227651, guid: 5ee67c5faf798f34487a9041cb9c9efb, type: 3}
+  reload: 2
+  damage: 110
+  ammo: 120
+  clipSize: 30
+  burst: 1
+  pellets: 1
+  sprGun: {fileID: 21300000, guid: 3bbaac04acd2a2541994b01323860d5e, type: 3}
+  soundShoot: {fileID: 8300000, guid: e53f5fefbe178e547bef1c991cf8a21d, type: 3}
+  pitchRandom: 0
+  volume: 0.3
+  recovery: 0
