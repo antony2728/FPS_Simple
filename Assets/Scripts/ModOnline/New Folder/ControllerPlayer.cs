@@ -10,6 +10,9 @@ public class ControllerPlayer : MonoBehaviour
     public Transform transPri;
     public Transform transSec;
 
+    public Animator anim;
+
+    public bool mov = false;
 
     [SerializeField] GameObject[] weapons;
 
@@ -19,6 +22,7 @@ public class ControllerPlayer : MonoBehaviour
         secundaria = PlayerPrefs.GetInt("Sec");
 
         ChangePrimary();
+        ChangeSecundary();  
     }
 
 
@@ -26,10 +30,41 @@ public class ControllerPlayer : MonoBehaviour
     {
         if (transPri.GetChild(0) != null) 
         {
-            Destroy(transPri.GetChild(0));
+            Destroy(transPri.GetChild(0).gameObject);
         }
         GameObject newWeap = Instantiate(weapons[primaria], transPri.position, transPri.rotation);
         newWeap.transform.SetParent(transPri);
+        newWeap.transform.localScale = new Vector3(1, 1, 1);
     }
 
+    public void ChangeSecundary()
+    {
+        if (transSec.GetChild(0) != null)
+        {
+            Destroy(transSec.GetChild(0).gameObject);
+        }
+        GameObject newWeap = Instantiate(weapons[secundaria], transSec.position, transSec.rotation);
+        newWeap.transform.SetParent(transSec);
+        newWeap.transform.localScale = new Vector3(1, 1, 1);
+    }
+
+    public void CamMov()
+    {
+        if (!mov)
+        {
+            anim.Play("MovWeapons", 0, 0);
+            mov = true;
+        }
+        else
+        {
+            anim.Play("MovStart", 0, 0);
+            mov = false;
+        }
+    }
+
+
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
 }

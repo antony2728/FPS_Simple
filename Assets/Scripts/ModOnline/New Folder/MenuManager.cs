@@ -7,8 +7,15 @@ public class MenuManager : MonoBehaviour
     [SerializeField] GameObject myPnl;
     NewLauncher launcher;
 
+    Animator anim;
+    ControllerPlayer controllerPlayer;
+
+    public int type;
+
     private void Start()
     {
+        controllerPlayer = GameObject.FindGameObjectWithTag("Launcher").GetComponent<ControllerPlayer>();
+        anim = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Animator>();
         launcher = GameObject.FindGameObjectWithTag("Launcher").GetComponent<NewLauncher>();
     }
 
@@ -33,6 +40,16 @@ public class MenuManager : MonoBehaviour
         {
             myPnl.SetActive(false);
             launcher.pnlActive = null;
+        }
+
+
+        if(type == 1)
+        {
+            if(controllerPlayer.mov == true)
+            {
+                anim.Play("MovStart", 0, 0);
+                controllerPlayer.mov = false;
+            }
         }
     }
 }
