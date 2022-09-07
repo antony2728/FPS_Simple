@@ -15,6 +15,11 @@ public class Weapon : MonoBehaviourPunCallbacks
     public AudioSource sfx;
     public AudioClip hitMarkerSound;
 
+    bool weap1 = false;
+    bool weap2 = false;
+
+    AmmoController ammoController;
+
     Image imgGun;
     float currentCooldown;
     int currentIndex;
@@ -39,6 +44,7 @@ public class Weapon : MonoBehaviourPunCallbacks
         imgGun = GameObject.Find("HUD/Ammo/ImageGun").GetComponent<Image>();
         hitMarkerImg = GameObject.Find("HUD/HitMarker/Image").GetComponent<Image>();
         EquipWeapons();
+        ammoController = GetComponent<AmmoController>();
         hitMarkerImg.color = new Color(1, 1, 1, 0);
         hitMarkerImg.color = CLEARWHITE;
         //foreach (gun a in loadaut) a.Initialize();
@@ -158,8 +164,29 @@ public class Weapon : MonoBehaviourPunCallbacks
         newWeapon.GetComponent<Animator>().Play("Equip", 0, 0);
         imgGun.sprite = loadaut[p_id].sprGun;
 
-        ammoCant = loadaut[p_id].clipSize;
-        ammoTotal = loadaut[p_id].ammo;
+        if (loadaut[0])
+        {
+            weap1 = true;
+        }else if (loadaut[1])
+        {
+            weap2 = true;
+        }
+
+        if(ammoController.equip1 == false)
+        {
+            ammoController.ammoCant1 = loadaut[p_id].clipSize;
+            ammoController.ammoTotal1 = loadaut[p_id].ammo;
+            ammoController.equip1 = true;
+        }
+        else
+        {
+            if(ammoController.equip2 == false)
+            {
+                ammoController.ammoCant2 = loadaut[p_id].clipSize;
+                ammoController.ammoTotal2 = loadaut[p_id].ammo;
+                ammoController.equip2 = false;
+            }
+        }
 
         currentWeapon = newWeapon;
         currentGunData = loadaut[p_id];
