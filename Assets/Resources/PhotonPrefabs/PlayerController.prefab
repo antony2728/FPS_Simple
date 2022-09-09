@@ -241,6 +241,7 @@ GameObject:
   - component: {fileID: 8747960677670798029}
   - component: {fileID: 9197142554474526064}
   - component: {fileID: 7377099625577020304}
+  - component: {fileID: 8857536684334113176}
   m_Layer: 6
   m_Name: PlayerController
   m_TagString: Untagged
@@ -479,6 +480,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameSup: {fileID: 2640589694093940180}
   pv: {fileID: 8747960677670798029}
+--- !u!114 &8857536684334113176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3060398459994191145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76666ce57296c7488727f4f4ca11f34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ammoCant1: 0
+  ammoTotal1: 0
+  ammoGas1: 0
+  ammoCant2: 0
+  ammoTotal2: 0
+  ammoGas2: 0
+  equip1: 0
+  equip2: 0
 --- !u!1 &3060398460238759441
 GameObject:
   m_ObjectHideFlags: 0

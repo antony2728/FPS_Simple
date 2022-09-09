@@ -67,3 +67,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e106b8b19523114e8e4bad189ea355b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  killstx: {fileID: 0}
+  deathstx: {fileID: 0}

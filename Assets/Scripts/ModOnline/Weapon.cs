@@ -26,7 +26,7 @@ public class Weapon : MonoBehaviourPunCallbacks
     GameObject currentWeapon;
     [SerializeField]bool isReloading = false;
 
-    int ammoCant;
+    int ammoEquip;
     int ammoTotal;
     int ammoGas;
 
@@ -85,7 +85,7 @@ public class Weapon : MonoBehaviourPunCallbacks
                 {
                     if (Input.GetMouseButtonDown(0) && currentCooldown <= 0)
                     {
-                        if (ammoCant > 0)
+                        if (ammoEquip > 0)
                         {
                             photonView.RPC("Shoot", RpcTarget.All);
                         }
@@ -102,7 +102,7 @@ public class Weapon : MonoBehaviourPunCallbacks
                 {
                     if (Input.GetMouseButton(0) && currentCooldown <= 0)
                     {
-                        if (ammoCant > 0)
+                        if (ammoEquip > 0)
                         {
                             photonView.RPC("Shoot", RpcTarget.All);
                         }
@@ -167,8 +167,10 @@ public class Weapon : MonoBehaviourPunCallbacks
         if (loadaut[0])
         {
             weap1 = true;
+            weap2 = false;
         }else if (loadaut[1])
         {
+            weap1 = false;
             weap2 = true;
         }
 
@@ -217,18 +219,22 @@ public class Weapon : MonoBehaviourPunCallbacks
 
     void newAmmo()
     {
-        if (ammoTotal >= ammoGas)
+        if (weap1) 
         {
-            ammoCant += ammoGas;
-            ammoTotal -= ammoGas;
-            ammoGas = 0;
+            if (ammoController.ammoTotal1 >= ammoController.ammoGas1)
+            {
+                ammoController.ammoCant1 += ammoController.ammoGas1;
+                ammoController.ammoTotal1 -= ammoController.ammoGas1;
+                ammoController.ammoGas1 = 0;
+            }
+            else if (ammoController.ammoTotal1 < ammoController.ammoGas1)
+            {
+                ammoController.ammoCant1 += ammoController.ammoTotal1;
+                ammoController.ammoGas1 -= ammoController.ammoTotal1;
+                ammoController.ammoTotal1 = 0;
+            }
         }
-        else if (ammoTotal < ammoGas)
-        {
-            ammoCant += ammoTotal;
-            ammoGas -= ammoTotal;
-            ammoTotal = 0;
-        }
+
     }
 
     void Aim(bool isAiming) 
@@ -257,8 +263,19 @@ public class Weapon : MonoBehaviourPunCallbacks
             //CoolDown
             currentCooldown = loadaut[currentIndex].firate;
             //Rest
-            ammoCant -= 1;
-            ammoGas += 1;
+            if (weap1 && !weap2)
+            {
+                ammoController.ammoCant1 -= 1;
+                ammoController.ammoGas1 += 1;
+                ammoEquip = ammoController.ammoCant1;
+            }
+            else if(!weap1 && weap2)
+            {
+                ammoController.ammoCant2 -= 1;
+                ammoController.ammoGas2 += 1;
+                ammoEquip = ammoController.ammoCant2;
+            }
+
             for (int i = 0; i < Mathf.Max(1, currentGunData.pellets); i++) 
             {
                 //Bloom
@@ -324,8 +341,20 @@ public class Weapon : MonoBehaviourPunCallbacks
 
     public void RefreshAmmo(Text txt) 
     {
-        int ammoEquip = ammoCant;
-        int ammoInTotal = ammoTotal;
+        if (weap1)
+        {
+            ammoEquip = ammoController.ammoCant1;
+            ammoTotal = ammoController.ammoTotal1;
+            ammoGas = ammoController.ammoGas1;
+        }
+        else if(weap2) 
+        {
+            ammoEquip = ammoController.ammoCant2;
+            ammoTotal = ammoController.ammoTotal2;
+            ammoGas = ammoController.ammoGas2;
+        }
+
+        
 
         txt.text = ammoEquip.ToString("D2") + " / " + ammoTotal.ToString("D2");
     }
