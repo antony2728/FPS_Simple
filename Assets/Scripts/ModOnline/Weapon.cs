@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -49,6 +50,8 @@ public class Weapon : MonoBehaviourPunCallbacks
         hitMarkerImg.color = CLEARWHITE;
         //foreach (gun a in loadaut) a.Initialize();
         Equip(0);
+        weap1 = true;
+        weap2 = false;
     }
 
     public void EquipWeapons() 
@@ -69,10 +72,14 @@ public class Weapon : MonoBehaviourPunCallbacks
         if (photonView.IsMine && Input.GetKeyDown(KeyCode.Alpha1)) 
         {
             photonView.RPC("Equip", RpcTarget.All, 0);
+            weap1 = true;
+            weap2 = false;
         }
         if (photonView.IsMine && Input.GetKeyDown(KeyCode.Alpha2))
         {
             photonView.RPC("Equip", RpcTarget.All, 1);
+            weap1 = false;
+            weap2 = true;
         }
 
         if (currentWeapon != null) 
@@ -130,6 +137,7 @@ public class Weapon : MonoBehaviourPunCallbacks
             currentWeapon.transform.localPosition = Vector3.Lerp(currentWeapon.transform.localPosition, Vector3.zero, Time.deltaTime * 4f);
         }
 
+
         if (photonView.IsMine) 
         {
             if (hitMarkerWait > 0)
@@ -164,15 +172,6 @@ public class Weapon : MonoBehaviourPunCallbacks
         newWeapon.GetComponent<Animator>().Play("Equip", 0, 0);
         imgGun.sprite = loadaut[p_id].sprGun;
 
-        if (loadaut[0])
-        {
-            weap1 = true;
-            weap2 = false;
-        }else if (loadaut[1])
-        {
-            weap1 = false;
-            weap2 = true;
-        }
 
         if(ammoController.equip1 == false)
         {
@@ -219,7 +218,7 @@ public class Weapon : MonoBehaviourPunCallbacks
 
     void newAmmo()
     {
-        if (weap1) 
+        if (weap1)
         {
             if (ammoController.ammoTotal1 >= ammoController.ammoGas1)
             {
@@ -234,7 +233,21 @@ public class Weapon : MonoBehaviourPunCallbacks
                 ammoController.ammoTotal1 = 0;
             }
         }
-
+        else if (weap2) 
+        {
+            if (ammoController.ammoTotal2 >= ammoController.ammoGas2)
+            {
+                ammoController.ammoCant2 += ammoController.ammoGas2;
+                ammoController.ammoTotal2 -= ammoController.ammoGas2;
+                ammoController.ammoGas2 = 0;
+            }
+            else if (ammoController.ammoTotal2 < ammoController.ammoGas2) 
+            {
+                ammoController.ammoCant2 += ammoController.ammoTotal2;
+                ammoController.ammoGas2 -= ammoController.ammoTotal2;
+                ammoController.ammoTotal2 = 0;
+            }
+        }
     }
 
     void Aim(bool isAiming) 
@@ -353,8 +366,6 @@ public class Weapon : MonoBehaviourPunCallbacks
             ammoTotal = ammoController.ammoTotal2;
             ammoGas = ammoController.ammoGas2;
         }
-
-        
 
         txt.text = ammoEquip.ToString("D2") + " / " + ammoTotal.ToString("D2");
     }

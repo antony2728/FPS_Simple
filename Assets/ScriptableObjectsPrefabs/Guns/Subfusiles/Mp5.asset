@@ -19,7 +19,7 @@ MonoBehaviour:
   kickback: 0.05
   aimSpeed: 7
   prefab: {fileID: 7091249482717227651, guid: 62726d482444ac84c9318e47122ec988, type: 3}
-  reload: 2
+  reload: 0.14
   damage: 100
   ammo: 125
   clipSize: 25

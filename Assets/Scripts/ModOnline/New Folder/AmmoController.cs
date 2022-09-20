@@ -14,4 +14,7 @@ public class AmmoController : MonoBehaviour
 
     public bool equip1;
     public bool equip2;
+
+
+
 }
