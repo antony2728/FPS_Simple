@@ -25,8 +25,9 @@ MonoBehaviour:
   clipSize: 10
   burst: 0
   pellets: 5
-  sprGun: {fileID: 21300000, guid: 6554d6262b5ccbb4f9018a32792ba4ad, type: 3}
+  sprGun: {fileID: -1186387482, guid: 41aec85a1493c514e993de62933b72b3, type: 3}
   soundShoot: {fileID: 8300000, guid: e53f5fefbe178e547bef1c991cf8a21d, type: 3}
   pitchRandom: 0.3
   volume: 0.3
   recovery: 1
+  modelWeap: {fileID: 4946633900347867377, guid: 243cbef5f1c2adc4da66bcfca86cea56, type: 3}

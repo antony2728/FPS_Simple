@@ -364,6 +364,19 @@ namespace Photon.Pun
             }
         }
 
+        public static string Level 
+        {
+            get 
+            {
+                return NetworkingClient.Level;
+            }
+
+            set 
+            {
+                NetworkingClient.Level = value;
+            }
+        }
+
         /// <summary>
         /// A sorted copy of the players-list of the current room. This is using Linq, so better cache this value. Update when players join / leave.
         /// </summary>

@@ -31,6 +31,5 @@ public class RoomListItemPrefab : MonoBehaviour
         NewLauncher.instance.JoinRoom(roomInfo);
         launcher.pnlActive.SetActive(false);
         launcher.pnlActive = null;
-        top.SetActive(false);
     }
 }

@@ -17,41 +17,151 @@ public class PlayerManager : MonoBehaviourPunCallbacks
     int kills;
     int deaths;
 
+    public GameObject myCam;
+    Transform pointSpawn;
 
+    Transform pointRed;
+    Transform pointBlue;
+
+    [SerializeField] GameObject pnlTeam;
     [SerializeField] Text killstx;
     [SerializeField] Text deathstx;
 
+    string team;
+    bool die;
+
     Player player;
+
+    //Datos
+    float timerDestruct;
+    [SerializeField] float timeD;
+
     private void Awake()
     {
+        pointRed = GameObject.FindGameObjectWithTag("Red").GetComponent<Transform>();
+        pointBlue = GameObject.FindGameObjectWithTag("Blue").GetComponent<Transform>();
         pv = GetComponent<PhotonView>();
+        //pointSpawn = GameObject.FindGameObjectWithTag("Blue").GetComponent<Transform>();
     }
 
     private void Start()
     {
-        if (pv.IsMine) 
+        if (pv.IsMine)
         {
             killstx = GameObject.Find("HUD/Leadboard/Kills").GetComponent<Text>();
             deathstx = GameObject.Find("HUD/Leadboard/Deaths").GetComponent<Text>();
+            //CreateController();
+        }
+        else if (!pv.IsMine)
+        {
+            Destroy(myCam);
+            Destroy(pnlTeam);
+        }
+    }
+
+    private void Update()
+    {
+        /*if (photonView.IsMine)
+        {
+            if (die)
+            {
+                pv.RPC("RPC_Timer", RpcTarget.All);
+            }
+        }*/
+        /*else if (!photonView.IsMine) 
+        {
+            PhotonNetwork.Destroy(controller);
+        }*/
+
+    }
+
+    public void InstanceRed()
+    {
+        //CreateController();
+        controller = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerControllerRed"), pointRed.position, Quaternion.identity, 0, new object[] { pv.ViewID });
+        controller.GetComponent<Weapon>().team = "Red";
+        pointSpawn = pointRed;
+        team = "Red";
+        myCam.SetActive(false);
+        pnlTeam.SetActive(false);
+    }
+
+    public void InstanceBlue()
+    {
+        //CreateController();
+        controller = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerControllerBlue"), pointBlue.position, Quaternion.identity, 0, new object[] { pv.ViewID });
+        controller.GetComponent<Weapon>().team = "Blue";
+        pointSpawn = pointBlue;
+        team = "Blue";
+        myCam.SetActive(false);
+        pnlTeam.SetActive(false);
+    }
+
+    void CreateController()
+    {
+        controller = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), pointRed.position, Quaternion.identity, 0, new object[] { pv.ViewID });
+    }
+
+    public void Die()
+    {
+        if (!die)
+        {
+            deaths++;
+            Hashtable hash = new Hashtable();
+            hash.Add("deaths", deaths);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+            RespawnPlayer();
+            /*if (team == "Red")
+            {
+                InstanceRed();
+            }
+            else if (team == "Blue")
+            {
+                InstanceBlue();
+            }
+
+            if (team == null)
+            {
+                CreateController();
+            }*/
+            //die = true;
+        }
+    }
+
+    void RespawnPlayer() 
+    {
+        StartCoroutine(Respawn(4));
+    }
+
+    IEnumerator Respawn(float timer) 
+    {
+        Destroy(controller.GetComponent<Weapon>().currentWeapon);
+        controller.GetComponent<Movement>().camPar.SetActive(false);
+        PosCam();
+        myCam.SetActive(true);
+        yield return new WaitForSeconds(timer);
+        myCam.SetActive(false);
+        PhotonNetwork.Destroy(controller);
+        if (team == "Red")
+        {
+            InstanceRed();
+        }
+        else if (team == "Blue")
+        {
+            InstanceBlue();
+        }
+
+        if (team == null)
+        {
             CreateController();
         }
     }
 
-    void CreateController() 
+    void PosCam() 
     {
-        
-        controller = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), Vector3.zero, Quaternion.identity, 0, new object[] { pv.ViewID });
-    }
-
-    public void Die() 
-    {
-        PhotonNetwork.Destroy(controller);
-        CreateController();
-
-        deaths++;
-        Hashtable hash = new Hashtable();
-        hash.Add("deaths", deaths);
-        PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+        Transform newPos = controller.transform.GetChild(0).GetComponent<Transform>();
+        myCam.transform.position = newPos.position;
+        myCam.transform.rotation = newPos.rotation;
     }
 
     public void GetKill()
@@ -59,11 +169,43 @@ public class PlayerManager : MonoBehaviourPunCallbacks
         pv.RPC(nameof(RPC_GetKill), pv.Owner);
     }
 
+    public void ActiveTimer() 
+    {
+        pv.RPC(nameof(RPC_Timer), pv.Owner);
+    }
+
+    [PunRPC]
+    void RPC_Timer() 
+    {
+        //if (photonView.IsMine) 
+        //{
+            timerDestruct += Time.deltaTime;
+            if (timerDestruct >= timeD)
+            {
+                PhotonNetwork.Destroy(controller);
+                if (team == "Red")
+                {
+                    InstanceRed();
+                }
+                else if (team == "Blue")
+                {
+                    InstanceBlue();
+                }
+
+                /*if (team == null)
+                {
+                    CreateController();
+                }*/
+                die = false;
+            }
+        //}
+
+    }
+
     [PunRPC]
     void RPC_GetKill() 
     {
         kills++;
-
         Hashtable hash = new Hashtable();
         hash.Add("kills", kills);
         PhotonNetwork.LocalPlayer.SetCustomProperties(hash);

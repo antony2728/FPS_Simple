@@ -24,6 +24,7 @@ public class gun : ScriptableObject
     public float pitchRandom;
     public float volume;
     public bool recovery;
+    public GameObject modelWeap;
 
     int stash;
     int clip;

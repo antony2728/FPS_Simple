@@ -68,6 +68,7 @@ namespace Photon.Realtime
 
         /// <summary>Background field for nickName.</summary>
 		private string nickName = string.Empty;
+        private string level = string.Empty; 
 
         /// <summary>Non-unique nickname of this player. Synced automatically in a room.</summary>
         /// <remarks>
@@ -93,6 +94,28 @@ namespace Photon.Realtime
                 if (this.IsLocal)
                 {
                     this.SetPlayerNameProperty();
+                }
+            }
+        }
+
+        public string Level 
+        {
+            get 
+            {
+                return this.level;
+            }
+            set 
+            {
+                if (!string.IsNullOrEmpty(this.level) && this.level.Equals(value)) 
+                {
+                    return;
+                }
+
+                this.level = value;
+
+                if (this.IsLocal) 
+                {
+                    this.SetLevelPlayerProperty();
                 }
             }
         }
@@ -146,7 +169,9 @@ namespace Photon.Realtime
         /// <param name="nickName">NickName of the player (a "well known property").</param>
         /// <param name="actorNumber">ID or ActorNumber of this player in the current room (a shortcut to identify each player in room)</param>
         /// <param name="isLocal">If this is the local peer's player (or a remote one).</param>
-        protected internal Player(string nickName, int actorNumber, bool isLocal) : this(nickName, actorNumber, isLocal, null)
+        /// <param name="level">If this is the local peer's player (or a remote one).</param>
+
+        protected internal Player(string nickName, int actorNumber, bool isLocal, string level) : this(nickName, actorNumber, isLocal, level, null)
         {
         }
 
@@ -157,12 +182,14 @@ namespace Photon.Realtime
         /// <param name="nickName">NickName of the player (a "well known property").</param>
         /// <param name="actorNumber">ID or ActorNumber of this player in the current room (a shortcut to identify each player in room)</param>
         /// <param name="isLocal">If this is the local peer's player (or a remote one).</param>
+        /// <param name="level">If this is the local peer's player (or a remote one).</param>
         /// <param name="playerProperties">A Hashtable of custom properties to be synced. Must use String-typed keys and serializable datatypes as values.</param>
-        protected internal Player(string nickName, int actorNumber, bool isLocal, Hashtable playerProperties)
+        protected internal Player(string nickName, int actorNumber, bool isLocal, string level, Hashtable playerProperties)
         {
             this.IsLocal = isLocal;
             this.actorNumber = actorNumber;
             this.NickName = nickName;
+            this.Level = level;
 
             this.CustomProperties = new Hashtable();
             this.InternalCacheProperties(playerProperties);
@@ -264,6 +291,10 @@ namespace Photon.Realtime
                         if (!nameInServersProperties.Equals(this.nickName))
                         {
                             this.SetPlayerNameProperty();
+                        }
+                        if (!nameInServersProperties.Equals(this.level)) 
+                        {
+                            this.SetLevelPlayerProperty();
                         }
                     }
                     else
@@ -443,6 +474,18 @@ namespace Photon.Realtime
             {
                 Hashtable properties = new Hashtable();
                 properties[ActorProperties.PlayerName] = this.nickName;
+                return this.RoomReference.LoadBalancingClient.OpSetPropertiesOfActor(this.ActorNumber, properties);
+            }
+
+            return false;
+        }
+
+        private bool SetLevelPlayerProperty()
+        {
+            if (this.RoomReference != null && !this.RoomReference.IsOffline)
+            {
+                Hashtable properties = new Hashtable();
+                properties[ActorProperties.PlayerLevel] = this.level;
                 return this.RoomReference.LoadBalancingClient.OpSetPropertiesOfActor(this.ActorNumber, properties);
             }
 

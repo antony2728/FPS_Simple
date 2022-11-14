@@ -618,6 +618,24 @@ namespace Photon.Realtime
             }
         }
 
+        public string Level
+        {
+            get
+            {
+                return this.LocalPlayer.Level;
+            }
+
+            set
+            {
+                if (this.LocalPlayer == null)
+                {
+                    return;
+                }
+
+                this.LocalPlayer.Level = value;
+            }
+        }
+
 
         /// <summary>An ID for this user. Sent in OpAuthenticate when you connect. If not set, the PlayerName is applied during connect.</summary>
         /// <remarks>
@@ -774,7 +792,7 @@ namespace Photon.Realtime
             this.LoadBalancingPeer = new LoadBalancingPeer(this, protocol);
             this.LoadBalancingPeer.OnDisconnectMessage += this.OnDisconnectMessageReceived;
             this.SerializationProtocol = SerializationProtocol.GpBinaryV18;
-            this.LocalPlayer = this.CreatePlayer(string.Empty, -1, true, null); //TODO: Check if we can do this later
+            this.LocalPlayer = this.CreatePlayer(string.Empty, -1, true, string.Empty, null); //TODO: Check if we can do this later
 
 
             #if SUPPORTED_UNITY
@@ -2243,6 +2261,7 @@ namespace Photon.Realtime
                     int actorNr;
                     Hashtable props;
                     string newName;
+                    string newLevel;
                     Player target;
 
                     foreach (object key in actorProperties.Keys)
@@ -2255,11 +2274,12 @@ namespace Photon.Realtime
 
                         props = (Hashtable)actorProperties[key];
                         newName = (string)props[ActorProperties.PlayerName];
+                        newLevel = (string)props[ActorProperties.PlayerLevel];
 
                         target = this.CurrentRoom.GetPlayer(actorNr);
                         if (target == null)
                         {
-                            target = this.CreatePlayer(newName, actorNr, false, props);
+                            target = this.CreatePlayer(newName, actorNr, false, newLevel, props);
                             this.CurrentRoom.StorePlayer(target);
                         }
                         target.InternalCacheProperties(props);
@@ -2381,7 +2401,7 @@ namespace Photon.Realtime
                     Player target = this.CurrentRoom.GetPlayer(actorNumber);
                     if (target == null)
                     {
-                        this.CurrentRoom.StorePlayer(this.CreatePlayer(string.Empty, actorNumber, false, null));
+                        this.CurrentRoom.StorePlayer(this.CreatePlayer(string.Empty, actorNumber, false, string.Empty, null));
                     }
                 }
             }
@@ -2394,10 +2414,11 @@ namespace Photon.Realtime
         /// <param name="actorNumber">The player ID (a.k.a. actorNumber) of the player to be created.</param>
         /// <param name="isLocal">Sets the distinction if the player to be created is your player or if its assigned to someone else.</param>
         /// <param name="actorProperties">The custom properties for this new player</param>
+        /// <param name="actorLevel">The custom properties for this new player</param>
         /// <returns>The newly created player</returns>
-        protected internal virtual Player CreatePlayer(string actorName, int actorNumber, bool isLocal, Hashtable actorProperties)
+        protected internal virtual Player CreatePlayer(string actorName, int actorNumber, bool isLocal, string actorLevel, Hashtable actorProperties)
         {
-            Player newPlayer = new Player(actorName, actorNumber, isLocal, actorProperties);
+            Player newPlayer = new Player(actorName, actorNumber, isLocal, actorLevel, actorProperties);
             return newPlayer;
         }
 
@@ -3198,7 +3219,7 @@ namespace Photon.Realtime
                     {
                         if (actorNr > 0)
                         {
-                            originatingPlayer = this.CreatePlayer(string.Empty, actorNr, false, actorProperties);
+                            originatingPlayer = this.CreatePlayer(string.Empty, actorNr, false, string.Empty, actorProperties);
                             this.CurrentRoom.StorePlayer(originatingPlayer);
                         }
                     }

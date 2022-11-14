@@ -1275,6 +1275,8 @@ namespace Photon.Realtime
 
         /// <summary>(253) UserId of the player. Sent when room gets created with RoomOptions.PublishUserId = true.</summary>
         public const byte UserId = 253;
+
+        public const byte PlayerLevel = 252;
     }
 
 

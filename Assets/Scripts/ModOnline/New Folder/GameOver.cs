@@ -10,6 +10,8 @@ public class GameOver : MonoBehaviour
 
     bool disconnecting = false;
 
+    [SerializeField] GameObject pnl_GameOver;
+
     MatchController matchController;
 
     private void Start()
@@ -27,10 +29,11 @@ public class GameOver : MonoBehaviour
 
     public void OverTime()
     {
-        if (disconnecting) return;
+        //if (disconnecting) return;
 
 
-        transform.GetChild(0).gameObject.SetActive(paused);
+        //transform.GetChild(0).gameObject.SetActive(paused);
+        pnl_GameOver.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }

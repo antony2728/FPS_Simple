@@ -9,20 +9,17 @@ using System.Linq;
 [System.Serializable]
 public class ProfileData
 {
-    public string username;
     public int level;
     public int xp;
 
     public ProfileData()
     {
-        this.username = "Default";
         this.level = 0;
         this.xp = 0;
     }
 
-    public ProfileData(string u, int l, int x)
+    public ProfileData(int l, int x)
     {
-        this.username = u;
         this.level = l;
         this.xp = x;
     }
@@ -30,7 +27,6 @@ public class ProfileData
 public class NewLauncher : MonoBehaviourPunCallbacks
 {
 
-    public InputField usernameFile;
     public static ProfileData myPlayer = new ProfileData();
 
 

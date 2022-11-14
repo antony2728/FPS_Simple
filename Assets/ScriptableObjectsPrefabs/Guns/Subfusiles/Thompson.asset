@@ -19,14 +19,15 @@ MonoBehaviour:
   kickback: 0.05
   aimSpeed: 7
   prefab: {fileID: 7091249482717227651, guid: f2136837c99c93443befd82ac2c7e624, type: 3}
-  reload: 2
+  reload: 1.09
   damage: 100
   ammo: 125
   clipSize: 25
   burst: 1
   pellets: 1
-  sprGun: {fileID: 21300000, guid: 9318a5d9357c40a469c4c82951858261, type: 3}
+  sprGun: {fileID: 499282889, guid: 4094d539b4a773a4c907e21ae3464eaa, type: 3}
   soundShoot: {fileID: 8300000, guid: e53f5fefbe178e547bef1c991cf8a21d, type: 3}
   pitchRandom: 0.3
   volume: 0.3
   recovery: 0
+  modelWeap: {fileID: 7035150285132083431, guid: f9201fa34f9f2f044ac117a6f6791437, type: 3}

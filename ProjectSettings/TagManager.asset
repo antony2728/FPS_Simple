@@ -11,6 +11,8 @@ TagManager:
   - CanvasPlayer
   - Controller
   - Top
+  - TeamRed
+  - TeamBlue
   layers:
   - Default
   - TransparentFX
@@ -22,8 +24,8 @@ TagManager:
   - Gun
   - Player
   - Target
-  - 
-  - 
+  - MeshVisible
+  - MeshInvisible
   - 
   - 
   - 

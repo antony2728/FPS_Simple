@@ -39,8 +39,14 @@ public class Movement : MonoBehaviourPunCallbacks, IPunObservable
     Vector3 weaponParentCurrentPos;
     Text uiUsername;
 
+    [SerializeField] Animator anim;
 
     PlayerManager playerManager;
+
+    Vector3 move;
+    bool sprintAnim;
+
+    public bool die;
 
     float aimAngle;
 
@@ -103,69 +109,84 @@ public class Movement : MonoBehaviourPunCallbacks, IPunObservable
             return;
         }
 
-
-        float HMOVE = Input.GetAxisRaw("Horizontal");
-        float VMOVE = Input.GetAxisRaw("Vertical");
-
-        bool sprint = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-        bool jump = Input.GetKeyDown(KeyCode.Space);
-        bool pause = Input.GetKeyDown(KeyCode.Escape);
-
-        bool isGRounded = Physics.Raycast(pointFloor.position, Vector3.down, 0.1f, maskGround);
-        bool isJumping = jump && isGRounded && !sliding;
-        bool isSprinting = sprint && VMOVE > 0 && !isJumping && isGRounded;
-
-        if (pause) 
+        if (!die) 
         {
-            GameObject.Find("Pause").GetComponent<Pause>().TogglePaused();
-        }
+            float HMOVE = Input.GetAxisRaw("Horizontal");
+            float VMOVE = Input.GetAxisRaw("Vertical");
 
-        if (Pause.paused) 
+            move = new Vector3(HMOVE, 0, VMOVE);
+
+            bool sprint = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+            bool jump = Input.GetKeyDown(KeyCode.Space);
+            bool pause = Input.GetKeyDown(KeyCode.Escape);
+
+            bool isGRounded = Physics.Raycast(pointFloor.position, Vector3.down, 0.1f, maskGround);
+            bool isJumping = jump && isGRounded && !sliding;
+            bool isSprinting = sprint && VMOVE > 0 && !isJumping && isGRounded;
+
+            sprintAnim = sprint;
+
+            if (pause)
+            {
+                GameObject.Find("Pause").GetComponent<Pause>().TogglePaused();
+            }
+
+            if (Pause.paused)
+            {
+                HMOVE = 0;
+                VMOVE = 0;
+                sprint = false;
+                jump = false;
+                pause = false;
+                isGRounded = false;
+                isJumping = false;
+                isSprinting = false;
+            }
+
+
+            if (isJumping)
+            {
+                rb.AddForce(Vector3.up * jumpFor);
+            }
+
+
+            if (sliding)
+            {
+                HeadBo(movementCounter, 0.15f, 0.075f);
+                waeponPar.localPosition = Vector3.Lerp(waeponPar.localPosition, targetWeponBobPos, Time.deltaTime * 6f);
+            }
+            else if (HMOVE == 0 && VMOVE == 0)
+            {
+                HeadBo(idleCounter, .025f, .025f);
+                idleCounter += Time.deltaTime;
+                waeponPar.localPosition = Vector3.Lerp(waeponPar.localPosition, targetWeponBobPos, Time.deltaTime * 2f);
+            }
+            else if (!isSprinting)
+            {
+                HeadBo(movementCounter, .035f, .035f);
+                movementCounter += Time.deltaTime * 3;
+                waeponPar.localPosition = Vector3.Lerp(waeponPar.localPosition, targetWeponBobPos, Time.deltaTime * 6f);
+            }
+            else
+            {
+                HeadBo(movementCounter, .15f, .075f);
+                movementCounter += Time.deltaTime * 5;
+                waeponPar.localPosition = Vector3.Lerp(waeponPar.localPosition, targetWeponBobPos, Time.deltaTime * 10f);
+            }
+
+            RefreshBar();
+            weap.RefreshAmmo(uiAmmo);
+        }
+       
+    }
+
+    private void LateUpdate()
+    {
+        if (photonView.IsMine) 
         {
-            HMOVE = 0;
-            VMOVE = 0;
-            sprint = false;
-            jump = false;
-            pause = false;
-            isGRounded = false;
-            isJumping = false;
-            isSprinting = false;
+            anim.SetBool("Idle", move == Vector3.zero);
+            anim.SetBool("Run", sprintAnim);
         }
-
-
-        if (isJumping)
-        {
-            rb.AddForce(Vector3.up * jumpFor);
-        }
-
-
-
-        if (sliding) 
-        {
-            HeadBo(movementCounter, 0.15f, 0.075f);
-            waeponPar.localPosition = Vector3.Lerp(waeponPar.localPosition, targetWeponBobPos, Time.deltaTime * 6f);
-        }
-        else if (HMOVE == 0 && VMOVE == 0)
-        {
-            HeadBo(idleCounter, .025f, .025f);
-            idleCounter += Time.deltaTime;
-            waeponPar.localPosition = Vector3.Lerp(waeponPar.localPosition, targetWeponBobPos, Time.deltaTime * 2f);
-        }
-        else if (!isSprinting)
-        {
-            HeadBo(movementCounter, .035f, .035f);
-            movementCounter += Time.deltaTime * 3;
-            waeponPar.localPosition = Vector3.Lerp(waeponPar.localPosition, targetWeponBobPos, Time.deltaTime * 6f);
-        }
-        else
-        {
-            HeadBo(movementCounter, .15f, .075f);
-            movementCounter += Time.deltaTime * 5;
-            waeponPar.localPosition = Vector3.Lerp(waeponPar.localPosition, targetWeponBobPos, Time.deltaTime * 10f);
-        }
-
-        RefreshBar();
-        weap.RefreshAmmo(uiAmmo);
     }
 
     private void FixedUpdate()
@@ -174,84 +195,89 @@ public class Movement : MonoBehaviourPunCallbacks, IPunObservable
         {
             return;
         }
-        float HMOVE = Input.GetAxisRaw("Horizontal");
-        float VMOVE = Input.GetAxisRaw("Vertical");
 
-        bool sprint = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-        bool jump = Input.GetKeyDown(KeyCode.Space);
-        bool slide = Input.GetKey(KeyCode.C);
-
-        bool isGRounded = Physics.Raycast(pointFloor.position, Vector3.down, 0.1f, maskGround);
-        bool isJumping = jump && isGRounded && !sliding;
-        bool isSprinting = sprint && VMOVE > 0 && !isJumping && isGRounded;
-        bool isSliding = isSprinting && slide && !sliding;
-
-
-        if (Pause.paused) 
+        if (!die) 
         {
-            HMOVE = 0;
-            VMOVE = 0;
-            sprint = false;
-            jump = false;
-            isGRounded = false;
-            isJumping = false;
-            isSprinting = false;
-            isSliding = false;
-        }
+            float HMOVE = Input.GetAxisRaw("Horizontal");
+            float VMOVE = Input.GetAxisRaw("Vertical");
 
-        Vector3 MOVE_DIR = Vector3.zero;
-        float adjustedSpeed = vel;
+            bool sprint = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+            bool jump = Input.GetKeyDown(KeyCode.Space);
+            bool slide = Input.GetKey(KeyCode.C);
 
-        if (!sliding)
-        {
-            MOVE_DIR = new Vector3(HMOVE, 0, VMOVE);
-            MOVE_DIR.Normalize();
-            MOVE_DIR = transform.TransformDirection(MOVE_DIR);
+            bool isGRounded = Physics.Raycast(pointFloor.position, Vector3.down, 0.1f, maskGround);
+            bool isJumping = jump && isGRounded && !sliding;
+            bool isSprinting = sprint && VMOVE > 0 && !isJumping && isGRounded;
+            bool isSliding = isSprinting && slide && !sliding;
 
-            if (isSprinting)
-                adjustedSpeed *= sprintVel;
-        }
-        else
-        {
-            MOVE_DIR = slideDir;
-            adjustedSpeed *= slideModifier;
-            slideTime -= Time.deltaTime;
-            if (slideTime <= 0)
+
+            if (Pause.paused)
             {
-                sliding = false;
-                weaponParentCurrentPos += Vector3.up * 0.5f;
+                HMOVE = 0;
+                VMOVE = 0;
+                sprint = false;
+                jump = false;
+                isGRounded = false;
+                isJumping = false;
+                isSprinting = false;
+                isSliding = false;
             }
-        }
 
-        Vector3 targetVel = MOVE_DIR * adjustedSpeed * Time.deltaTime;
-        targetVel.y = rb.velocity.y;
-        rb.velocity = targetVel;
+            Vector3 MOVE_DIR = Vector3.zero;
+            float adjustedSpeed = vel;
 
-        if (isSliding)
-        {
-            sliding = true;
-            slideDir = MOVE_DIR;
-            slideTime = lenghtOfSlide;
-            weaponParentCurrentPos += Vector3.down * 0.5f;
-        }
-
-        if (sliding)
-        {
-            myCam.fieldOfView = Mathf.Lerp(myCam.fieldOfView, baseOF * sprintOF * 1.25f, Time.deltaTime * 8);
-            myCam.transform.localPosition = Vector3.Lerp(myCam.transform.localPosition, origin + Vector3.down * 0.5f, Time.deltaTime * 6f);
-        }
-        else
-        {
-            if (isSprinting)
+            if (!sliding)
             {
-                myCam.fieldOfView = Mathf.Lerp(myCam.fieldOfView, baseOF * sprintOF, Time.deltaTime * 8);
+                MOVE_DIR = new Vector3(HMOVE, 0, VMOVE);
+                MOVE_DIR.Normalize();
+                MOVE_DIR = transform.TransformDirection(MOVE_DIR);
+
+                if (isSprinting)
+                    adjustedSpeed *= sprintVel;
             }
             else
             {
-                myCam.fieldOfView = Mathf.Lerp(myCam.fieldOfView, baseOF, Time.deltaTime * 8);
+                MOVE_DIR = slideDir;
+                adjustedSpeed *= slideModifier;
+                slideTime -= Time.deltaTime;
+                if (slideTime <= 0)
+                {
+                    sliding = false;
+                    weaponParentCurrentPos += Vector3.up * 0.5f;
+                }
             }
-            myCam.transform.localPosition = Vector3.Lerp(myCam.transform.localPosition, origin, Time.deltaTime * 6f);
+
+            Vector3 targetVel = MOVE_DIR * adjustedSpeed * Time.deltaTime;
+            targetVel.y = rb.velocity.y;
+            rb.velocity = targetVel;
+
+            if (isSliding)
+            {
+                sliding = true;
+                slideDir = MOVE_DIR;
+                slideTime = lenghtOfSlide;
+                weaponParentCurrentPos += Vector3.down * 0.5f;
+            }
+
+            if (sliding)
+            {
+                myCam.fieldOfView = Mathf.Lerp(myCam.fieldOfView, baseOF * sprintOF * 1.25f, Time.deltaTime * 8);
+                myCam.transform.localPosition = Vector3.Lerp(myCam.transform.localPosition, origin + Vector3.down * 0.5f, Time.deltaTime * 6f);
+            }
+            else
+            {
+                if (isSprinting)
+                {
+                    myCam.fieldOfView = Mathf.Lerp(myCam.fieldOfView, baseOF * sprintOF, Time.deltaTime * 8);
+                }
+                else
+                {
+                    myCam.fieldOfView = Mathf.Lerp(myCam.fieldOfView, baseOF, Time.deltaTime * 8);
+                }
+                myCam.transform.localPosition = Vector3.Lerp(myCam.transform.localPosition, origin, Time.deltaTime * 6f);
+            }
         }
+       
     }
 
     void RefreshBar() 
@@ -294,13 +320,22 @@ public class Movement : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void RPC_TakeDamage(int damage, PhotonMessageInfo info) 
     {
-        currentHtl -= damage;
-        RefreshBar();
-
-        if (currentHtl <= 0)
+        if (photonView.IsMine) 
         {
-            Die();
-            PlayerManager.Find(info.Sender).GetKill();
+            if (!die) 
+            {
+                currentHtl -= damage;
+                RefreshBar();
+
+                if (currentHtl <= 0)
+                {
+                    Die();
+                    die = true;
+                    anim.SetTrigger("Death");
+                    PlayerManager.Find(info.Sender).GetKill();
+                }
+            }
+
         }
     }
 

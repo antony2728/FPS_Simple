@@ -30,3 +30,4 @@ MonoBehaviour:
   pitchRandom: 0.3
   volume: 0.3
   recovery: 0
+  modelWeap: {fileID: 7691565204953132369, guid: 87e552504cf38294aae73ed9cc35db3c, type: 3}

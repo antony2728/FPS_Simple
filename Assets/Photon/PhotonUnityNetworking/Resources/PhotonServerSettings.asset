@@ -49,6 +49,7 @@ MonoBehaviour:
   - RPC_ControlTimer
   - RPC_TakeDamage
   - RPC_GetKill
+  - RPC_Timer
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

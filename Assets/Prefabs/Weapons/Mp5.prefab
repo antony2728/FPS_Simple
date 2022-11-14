@@ -1396,6 +1396,7 @@ GameObject:
   - component: {fileID: 7091249482717227650}
   - component: {fileID: 531636455836762168}
   - component: {fileID: 8890219994933530757}
+  - component: {fileID: 7842084640918786333}
   m_Layer: 7
   m_Name: Mp5
   m_TagString: Untagged
@@ -1455,6 +1456,31 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &7842084640918786333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7091249482717227651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 395eb75a6f498a04797bc1a60a8bad6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meshs:
+  - {fileID: 4297868665016993627}
+  - {fileID: 2924417469823431112}
+  - {fileID: 6265696575752855544}
+  - {fileID: 7332231189100451140}
+  - {fileID: 4756139786902680551}
+  - {fileID: 1394211905155720994}
+  - {fileID: 1705573795295976162}
+  - {fileID: 2686749085282302786}
+  - {fileID: 1620214716781916670}
+  - {fileID: 3583821006056560477}
+  - {fileID: 6981781803696079768}
+  - {fileID: 7211973349561269848}
 --- !u!1 &7091249482936808739
 GameObject:
   m_ObjectHideFlags: 0
@@ -1511,7 +1537,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7091249483046446021}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.644, y: -0.355, z: 0.14}
+  m_LocalPosition: {x: -0.5599, y: -0.3, z: 0.14}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

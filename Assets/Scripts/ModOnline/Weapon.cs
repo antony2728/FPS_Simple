@@ -21,27 +21,35 @@ public class Weapon : MonoBehaviourPunCallbacks
 
     AmmoController ammoController;
 
+    [SerializeField] Transform weapModelTrans;
+    GameObject currentModel;
+
     Image imgGun;
     float currentCooldown;
     int currentIndex;
-    GameObject currentWeapon;
+    public GameObject currentWeapon;
     [SerializeField]bool isReloading = false;
 
     int ammoEquip;
     int ammoTotal;
     int ammoGas;
 
+    Movement mov;
+
     Image hitMarkerImg;
     float hitMarkerWait;
     Color CLEARWHITE = new Color(1, 1, 1, 0);
+
+    [SerializeField] Animator anim;
 
     int p;
     int s;
 
     public gun[] weapons;
-
+    public string team;
     void Start()
     {
+        mov = GetComponent<Movement>();
         imgGun = GameObject.Find("HUD/Ammo/ImageGun").GetComponent<Image>();
         hitMarkerImg = GameObject.Find("HUD/HitMarker/Image").GetComponent<Image>();
         EquipWeapons();
@@ -67,88 +75,101 @@ public class Weapon : MonoBehaviourPunCallbacks
     void Update()
     {
 
+        /*if (Input.GetKeyDown(KeyCode.U))
+        {
+            photonView.RPC("RPC_TakeDamage", RpcTarget.All, loadaut[currentIndex].damage);
+        }*/
+
         if (Pause.paused && photonView.IsMine) return;
 
-        if (photonView.IsMine && Input.GetKeyDown(KeyCode.Alpha1)) 
+        if (mov.die == false) 
         {
-            photonView.RPC("Equip", RpcTarget.All, 0);
-            weap1 = true;
-            weap2 = false;
-        }
-        if (photonView.IsMine && Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            photonView.RPC("Equip", RpcTarget.All, 1);
-            weap1 = false;
-            weap2 = true;
-        }
+            if (photonView.IsMine && Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                photonView.RPC("Equip", RpcTarget.All, 0);
+                weap1 = true;
+                weap2 = false;
+            }
+            if (photonView.IsMine && Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                photonView.RPC("Equip", RpcTarget.All, 1);
+                weap1 = false;
+                weap2 = true;
+            }
 
-        if (currentWeapon != null) 
-        {
+            if (currentWeapon != null)
+            {
+                if (photonView.IsMine)
+                {
+                    Aim(Input.GetMouseButton(1));
+
+                    if (loadaut[currentIndex].burst != 1)
+                    {
+                        if (Input.GetMouseButtonDown(0) && currentCooldown <= 0)
+                        {
+                            if (ammoEquip > 0)
+                            {
+                                photonView.RPC("Shoot", RpcTarget.All);
+                            }
+                            else
+                            {
+                                if (isReloading == false && ammoGas > 0)
+                                {
+                                    StartCoroutine(Reload(loadaut[currentIndex].reload));
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (Input.GetMouseButton(0) && currentCooldown <= 0)
+                        {
+                            if (ammoEquip > 0)
+                            {
+                                photonView.RPC("Shoot", RpcTarget.All);
+                            }
+                            else
+                            {
+                                if (isReloading == false && ammoGas > 0)
+                                {
+                                    StartCoroutine(Reload(loadaut[currentIndex].reload));
+                                }
+                            }
+                        }
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.R))
+                    {
+                        if (isReloading == false && ammoGas > 0)
+                        {
+                            photonView.RPC("ReloadRPC", RpcTarget.All);
+                        }
+                    }
+
+                    if (currentCooldown > 0)
+                        currentCooldown -= Time.deltaTime;
+                }
+                currentWeapon.transform.localPosition = Vector3.Lerp(currentWeapon.transform.localPosition, Vector3.zero, Time.deltaTime * 4f);
+            }
+
+
             if (photonView.IsMine)
             {
-                Aim(Input.GetMouseButton(1));
-
-                if (loadaut[currentIndex].burst != 1)
+                if (hitMarkerWait > 0)
                 {
-                    if (Input.GetMouseButtonDown(0) && currentCooldown <= 0)
-                    {
-                        if (ammoEquip > 0)
-                        {
-                            photonView.RPC("Shoot", RpcTarget.All);
-                        }
-                        else
-                        {
-                            if (isReloading == false && ammoGas > 0) 
-                            {
-                                StartCoroutine(Reload(loadaut[currentIndex].reload));
-                            }
-                        }
-                    }
+                    hitMarkerWait -= Time.deltaTime;
                 }
-                else 
+                else if (hitMarkerImg.color.a > 0)
                 {
-                    if (Input.GetMouseButton(0) && currentCooldown <= 0)
-                    {
-                        if (ammoEquip > 0)
-                        {
-                            photonView.RPC("Shoot", RpcTarget.All);
-                        }
-                        else
-                        {
-                            if (isReloading == false && ammoGas > 0)
-                            {
-                                StartCoroutine(Reload(loadaut[currentIndex].reload));
-                            }
-                        }
-                    }
+                    hitMarkerImg.color = Color.Lerp(hitMarkerImg.color, CLEARWHITE, Time.deltaTime * 2f);
                 }
-
-                if (Input.GetKeyDown(KeyCode.R))
-                {
-                    if (isReloading == false && ammoGas > 0) 
-                    {
-                        photonView.RPC("ReloadRPC", RpcTarget.All);
-                    }
-                }
-
-                if (currentCooldown > 0)
-                    currentCooldown -= Time.deltaTime;
-            }
-            currentWeapon.transform.localPosition = Vector3.Lerp(currentWeapon.transform.localPosition, Vector3.zero, Time.deltaTime * 4f);
-        }
-
-
-        if (photonView.IsMine) 
-        {
-            if (hitMarkerWait > 0)
-            {
-                hitMarkerWait -= Time.deltaTime;
-            }
-            else if(hitMarkerImg.color.a > 0)
-            {
-                hitMarkerImg.color = Color.Lerp(hitMarkerImg.color, CLEARWHITE, Time.deltaTime * 2f);
             }
         }
+    }
+
+    private void LateUpdate()
+    {
+        anim.SetBool("Aim", isAim);
     }
 
     [PunRPC]
@@ -163,9 +184,15 @@ public class Weapon : MonoBehaviourPunCallbacks
             Destroy(currentWeapon);
         }
 
+        if (currentModel != null) 
+        {
+            Destroy(currentModel);
+        }
+
         currentIndex = p_id;
 
         GameObject newWeapon = Instantiate(loadaut[p_id].prefab, gunParent.position, gunParent.rotation, gunParent) as GameObject;
+        GameObject model = Instantiate(loadaut[p_id].modelWeap, weapModelTrans.position, weapModelTrans.rotation, weapModelTrans) as GameObject;
         newWeapon.transform.localPosition = Vector3.zero;
         newWeapon.transform.localEulerAngles = Vector3.zero;
         newWeapon.GetComponent<Sway>().isMine = photonView.IsMine;
@@ -190,6 +217,7 @@ public class Weapon : MonoBehaviourPunCallbacks
         }
 
         currentWeapon = newWeapon;
+        currentModel = model;
         currentGunData = loadaut[p_id];
     }
 
@@ -312,16 +340,33 @@ public class Weapon : MonoBehaviourPunCallbacks
 
                     if (photonView.IsMine)
                     {
+                        if (hit.collider.gameObject.tag == "TeamBlue")
+                        {
+                            if (gameObject.tag == "TeamRed") 
+                            {
+                                hit.collider.transform.root.gameObject.GetPhotonView().RPC("RPC_TakeDamage", RpcTarget.All, loadaut[currentIndex].damage);
+
+                                //hit.collider.transform.root.gameObject.GetComponent<Movement>().TakeDamage(loadaut[currentIndex].damage);
+                                hitMarkerImg.color = Color.white;
+                                sfx.PlayOneShot(hitMarkerSound);
+                                hitMarkerWait = 1f;
+                            }
+                        }
+                        if (hit.collider.gameObject.tag == "TeamRed")
+                        {
+                            if (gameObject.tag == "TeamBlue") 
+                            {
+                                hit.collider.transform.root.gameObject.GetPhotonView().RPC("RPC_TakeDamage", RpcTarget.All, loadaut[currentIndex].damage);
+
+                                //hit.collider.transform.root.gameObject.GetComponent<Movement>().TakeDamage(loadaut[currentIndex].damage);
+                                hitMarkerImg.color = Color.white;
+                                sfx.PlayOneShot(hitMarkerSound);
+                                hitMarkerWait = 1f;
+                            }
+                        }
                         if (hit.collider.gameObject.layer == 8)
                         {
                             hit.collider.transform.root.gameObject.GetComponent<Movement>().TakeDamage(loadaut[currentIndex].damage);
-                            hitMarkerImg.color = Color.white;
-                            sfx.PlayOneShot(hitMarkerSound);
-                            hitMarkerWait = 1f;
-                        }
-
-                        if (hit.collider.gameObject.layer == 9)
-                        {
                             hitMarkerImg.color = Color.white;
                             sfx.PlayOneShot(hitMarkerSound);
                             hitMarkerWait = 1f;

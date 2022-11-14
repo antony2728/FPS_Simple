@@ -9,11 +9,13 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
 {
     Player player;
     [SerializeField] Text tx;
+    [SerializeField] Text lvl;
 
     public void SetUp(Player _player) 
     {
         player = _player;
         tx.text = _player.NickName;
+        lvl.text = _player.Level;
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
